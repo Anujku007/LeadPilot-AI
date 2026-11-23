@@ -7,6 +7,7 @@ from sqlalchemy import (
     create_engine, String, Integer,
     DateTime, ForeignKey, Text
 )
+from sqlalchemy.pool import NullPool
 from sqlalchemy.orm import (
     DeclarativeBase, Mapped,
     mapped_column, sessionmaker
@@ -23,12 +24,29 @@ DATABASE_URL = os.getenv(
     "LEADPILOT_DATABASE_URL", DEFAULT_DB
 )
 
-engine = create_engine(
-    DATABASE_URL,
-    pool_pre_ping=True,
-    connect_args={"check_same_thread": False}
-    if DATABASE_URL.startswith("sqlite") else {}
-)
+# Local development uses SQLite; the cloud uses Neon PostgreSQL.
+# Explicitly select psycopg 3 when Neon supplies a postgresql:// URL.
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = "postgresql+psycopg://" + DATABASE_URL[len("postgres://"):]
+elif DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = "postgresql+psycopg://" + DATABASE_URL[len("postgresql://"):]
+
+if DATABASE_URL.startswith("sqlite"):
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True,
+        connect_args={"check_same_thread": False},
+    )
+else:
+    # Vercel functions are ephemeral and Neon already runs a transaction pooler.
+    # Keep no SQLAlchemy connections resident between requests or deployments.
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True,
+        poolclass=NullPool,
+        connect_args={"prepare_threshold": None}
+        if DATABASE_URL.startswith("postgresql+psycopg://") else {},
+    )
 
 SessionLocal = sessionmaker(
     bind=engine,
