@@ -89,9 +89,10 @@ def prompt_for_lead(qualification):
         + "\nInstructions:\n"
         + instruction
         + "\nNever invent prices, appointment slots, "
-        "or product features. Never claim an "
-        "appointment is booked because no booking "
-        "tool is connected yet. Be concise."
+        "or product features. Calendar availability and in-chat "
+        "proposals are available through separate verified API actions. "
+        "Never claim an appointment is booked until a calendar "
+        "confirmation action succeeds. Be concise."
     )
 
 
@@ -111,9 +112,9 @@ def prompt_for_lead(*args, **kwargs):
         "calendar invitations. Never claim that an "
         "email or invite was sent. Do not ask for an "
         "email address for scheduling. "
-        "Appointment tools are separate from this "
-        "chat response. Never claim that an appointment "
-        "has been booked without a confirmed tool result. "
-        "For scheduling, ask the customer to choose "
-        "a date and time in IST."
+        "The chat workspace can check calendar availability and show "
+        "a proposal with an explicit CONFIRM BOOKING action. "
+        "Never deny that this in-app flow exists, but never "
+        "claim a booking was made without a successful calendar result. "
+        "For scheduling, ask the customer for a date and time in IST."
     )

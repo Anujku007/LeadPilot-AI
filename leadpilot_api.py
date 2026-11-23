@@ -7,6 +7,11 @@ from leadpilot_ai.nvidia_llm_service import NvidiaLLMService
 from leadpilot_ai.lead_qualification import router as lead_router
 from leadpilot_ai.lead_extraction import router as extraction_router
 from leadpilot_ai.conversation_api import router as conversation_router
+from leadpilot_ai.smart_conversation import router as smart_conversation_router
+from leadpilot_ai.dashboard_api import router as dashboard_router
+from leadpilot_ai.sales_pipeline_api import router as sales_pipeline_router
+from leadpilot_ai.sales_insights_api import router as sales_insights_router
+from leadpilot_ai.voice_api import router as voice_router
 from leadpilot_ai.calendar_availability import router as calendar_router
 from leadpilot_ai.appointment_booking import router as booking_router
 from leadpilot_ai.appointment_workflow import router as workflow_router
@@ -71,6 +76,11 @@ async def chat(request: ChatRequest):
 app.include_router(lead_router)
 app.include_router(extraction_router)
 app.include_router(conversation_router)
+app.include_router(smart_conversation_router)
+app.include_router(dashboard_router)
+app.include_router(sales_pipeline_router)
+app.include_router(sales_insights_router)
+app.include_router(voice_router)
 app.include_router(calendar_router)
 app.include_router(booking_router)
 app.include_router(workflow_router)
@@ -81,3 +91,13 @@ app.include_router(playback_router)
 app.include_router(duplex_router)
 app.include_router(paced_router)
 app.include_router(live_router)
+
+
+# LEADPILOT_AUTH_V1 - protects FastAPI API and docs
+from starlette.middleware.base import BaseHTTPMiddleware
+from leadpilot_ai.auth_api import router as auth_router, auth_middleware
+from leadpilot_ai.team_access import router as team_router
+
+app.include_router(auth_router)
+app.include_router(team_router)
+app.add_middleware(BaseHTTPMiddleware, dispatch=auth_middleware)

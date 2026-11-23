@@ -1,0 +1,142 @@
+/* LeadPilot AI viewport-fit correction. Only affects the salesperson workspace. */
+.lps-shell { width: 100%; max-width: 100%; overflow-x: clip; }
+.lps-shell .lps-lead-pane,
+.lps-shell .lps-chat-pane,
+.lps-shell .lps-insights { min-width: 0; }
+.lps-shell .lps-lead-list,
+.lps-shell .lps-insights-scroll,
+.lps-shell .lps-messages,
+.lps-shell .lps-tool-stack { overscroll-behavior: contain; scrollbar-width: thin; }
+
+/* Make all status filters visible rather than creating a nested horizontal scrollbar. */
+.lps-shell .lps-filters {
+  flex-wrap: wrap;
+  overflow-x: visible;
+  gap: 5px;
+  padding-bottom: 10px;
+}
+.lps-shell .lps-filters button { padding: 6px 9px; min-width: 0; }
+
+/* Desktop/laptop: the workspace consumes the remaining viewport, not a 590px minimum. */
+@media (min-width: 1021px) {
+  .lp-staff-shell.lps-shell {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .lps-shell .lps-topbar {
+    flex: 0 0 64px;
+    height: 64px;
+    min-height: 64px;
+    padding-inline: clamp(14px, 2.2vw, 34px);
+  }
+  .lps-shell .lps-overview {
+    flex: 0 0 auto;
+    width: 100%;
+    padding: 12px clamp(12px, 2vw, 30px) 11px;
+  }
+  .lps-shell .lps-overview-title { margin-bottom: 10px; }
+  .lps-shell .lps-overview-title h1 {
+    font-size: clamp(19px, 1.45vw, 23px);
+    line-height: 1.15;
+    margin: 3px 0;
+  }
+  .lps-shell .lps-overview-title p { font-size: 11px; }
+  .lps-shell .lps-stat { padding: 10px 12px; border-radius: 14px; min-height: 60px; }
+  .lps-shell .lps-stat-icon { width: 36px; height: 36px; }
+  .lps-shell .lps-stat strong { font-size: 21px; }
+  .lps-shell .lps-stat small { font-size: 10px; margin-top: 3px; }
+  .lps-shell .lps-alert {
+    flex: 0 0 auto;
+    width: calc(100% - 24px);
+    margin-bottom: 8px;
+  }
+  .lps-shell .lps-workspace,
+  .lps-shell .lps-workspace.lps-insights-hidden,
+  .lps-shell .lps-workspace.lps-leads-hidden {
+    flex: 1 1 0;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    padding: 0 clamp(12px, 2vw, 30px) 12px;
+    overflow: hidden;
+  }
+  .lps-shell .lps-lead-pane,
+  .lps-shell .lps-chat-pane,
+  .lps-shell .lps-insights { min-height: 0; max-height: 100%; }
+  .lps-shell .lps-lead-list,
+  .lps-shell .lps-insights-scroll,
+  .lps-shell .lps-messages { min-height: 0; overflow-y: auto; }
+  .lps-shell .lps-messages { flex: 1 1 0; padding-block: 14px 10px; }
+  .lps-shell .lps-chat-head { padding: 12px 15px; }
+  .lps-shell .lps-chat-bottom { padding: 9px 14px 11px; }
+  .lps-shell .lps-tool-stack {
+    flex: 0 1 auto;
+    min-height: 0;
+    max-height: 43%;
+    overflow-y: auto;
+  }
+  .lps-shell .lps-pane-heading,
+  .lps-shell .lps-insights-head { padding: 14px 13px 11px; }
+  .lps-shell .lps-scoped-note { padding: 9px 13px; }
+}
+
+/* Short laptop windows: reserve height for chat rather than decorative text. */
+@media (min-width: 1021px) and (max-height: 730px) {
+  .lps-shell .lps-topbar { flex-basis: 55px; height: 55px; min-height: 55px; }
+  .lps-shell .lps-overview { padding-top: 8px; padding-bottom: 8px; }
+  .lps-shell .lps-overview-title { margin-bottom: 7px; }
+  .lps-shell .lps-overview-title p { display: none; }
+  .lps-shell .lps-stat { padding: 8px 10px; min-height: 52px; }
+  .lps-shell .lps-stat-icon { width: 32px; height: 32px; }
+  .lps-shell .lps-stat strong { font-size: 18px; }
+  .lps-shell .lps-chat-quick-actions { gap: 6px; }
+  .lps-shell .lps-composer textarea { min-height: 28px; }
+}
+
+/* On unusually short windows, allow one document scrollbar rather than clipping controls. */
+@media (min-width: 1021px) and (max-height: 500px) {
+  .lp-staff-shell.lps-shell { height: auto; min-height: 100vh; overflow-y: auto; }
+  .lps-shell .lps-workspace,
+  .lps-shell .lps-workspace.lps-insights-hidden,
+  .lps-shell .lps-workspace.lps-leads-hidden { flex: 0 0 auto; height: 510px; min-height: 510px; }
+}
+
+/* Tablet/phone: deliberately use natural page scrolling and stacked panels. */
+@media (max-width: 1020px) {
+  .lp-staff-shell.lps-shell { height: auto; min-height: 100vh; overflow-y: visible; }
+  .lps-shell .lps-workspace,
+  .lps-shell .lps-workspace.lps-insights-hidden,
+  .lps-shell .lps-workspace.lps-leads-hidden {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+  .lps-shell .lps-workspace { align-items: start; }
+  .lps-shell .lps-chat-pane {
+    height: min(720px, calc(100dvh - 110px));
+    min-height: 460px;
+    overflow: hidden;
+  }
+  .lps-shell .lps-lead-pane {
+    height: min(720px, calc(100dvh - 110px));
+    min-height: 0;
+  }
+  .lps-shell .lps-lead-list { min-height: 0; overflow-y: auto; }
+  .lps-shell .lps-messages { flex: 1 1 0; min-height: 0; overflow-y: auto; }
+  .lps-shell .lps-tool-stack { flex: 0 1 auto; min-height: 0; max-height: 43%; overflow-y: auto; }
+  .lps-shell .lps-insights { height: auto; max-height: 630px; min-height: 0; }
+  .lps-shell .lps-insights-scroll { min-height: 0; overflow-y: auto; }
+}
+@media (max-width: 650px) {
+  .lps-shell .lps-overview-title { align-items: flex-start; }
+  .lps-shell .lps-lead-pane { height: 300px; max-height: 300px; }
+  .lps-shell .lps-lead-list { max-height: none; }
+  .lps-shell .lps-chat-pane { height: min(660px, calc(100dvh - 85px)); min-height: 460px; }
+  .lps-shell .lps-messages { min-height: 0; }
+  .lps-shell .lps-insights { min-height: 0; max-height: 600px; }
+}

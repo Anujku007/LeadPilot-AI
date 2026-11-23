@@ -15,6 +15,9 @@ from .lead_extraction import (
 )
 from .nvidia_llm_service import NvidiaLLMService
 from .qualification_flow import merge_qualification, prompt_for_lead
+from .smart_conversation import (
+    classify_booking_turn, missing_question, recover_explicit_authority, has_saved_booking
+)
 
 router = APIRouter(
     prefix="/api/conversations",
@@ -119,30 +122,50 @@ async def conversation_chat(
             )
         )
 
-        qualification = merge_qualification(
-            stored,
-            extraction["extracted"]
+        qualification = merge_qualification(stored, extraction["extracted"])
+        # Only customer statements are evidence for buying authority;
+        # software department/user-count claims do not establish authority.
+        user_texts = [t["content"] for t in transcript if t["role"] == "user"]
+        qualification = recover_explicit_authority(qualification, user_texts)
+        stage = classify_booking_turn(
+            request.message, history, qualification["category"] == "Hot"
         )
 
-        reply = await nvidia.generate_response(
-            message=request.message,
-            history=history,
-            system_prompt=prompt_for_lead(
-                qualification
-            )
-        )
-
-        next_question = qualification["next_question"]
-
-        if (
-            next_question
-            and next_question.casefold()
-            not in reply.casefold()
-        ):
+        if stage == "ask_time":
             reply = (
-                "Thank you for sharing those details. "
-                + next_question
+                "Certainly. What date and time in IST would you prefer for "
+                "your 30-minute consultation? I will check live availability."
             )
+        elif stage == "confirm_ui":
+            reply = (
+                "To book safely, review the available slot and click "
+                "CONFIRM BOOKING in the appointment card shown in chat. "
+                "I cannot confirm a calendar event from speech or text alone."
+            )
+        elif stage == "check":
+            reply = "I'll check that time against Google Calendar now."
+        else:
+            reply = await nvidia.generate_response(
+                message=request.message, history=history,
+                system_prompt=prompt_for_lead(qualification)
+            )
+            question = missing_question(qualification)
+            if question and question.casefold() not in reply.casefold():
+                if qualification["missing_fields"][0] == "authority":
+                    reply = (
+                        "Thanks for explaining. To complete qualification, " + question
+                    )
+                else:
+                    reply = "Thank you for sharing those details. " + question
+            elif not question and any(s in reply.lower() for s in (
+                "cannot confirm bookings", "can't confirm bookings",
+                "cannot send calendar", "cannot book appointments"
+            )):
+                reply = (
+                    "I can help you check live Google Calendar availability "
+                    "and prepare a 30-minute consultation. "
+                    "What date and time in IST would you prefer?"
+                )
 
     except HTTPException:
         raise
@@ -175,11 +198,12 @@ async def conversation_chat(
             content=request.message
         ))
 
-        db.add(ChatMessage(
+        assistant_entry = ChatMessage(
             conversation_id=conversation_id,
             role="assistant",
             content=reply
-        ))
+        )
+        db.add(assistant_entry)
 
         lead = db.get(
             LeadProfile, conversation_id
@@ -202,12 +226,61 @@ async def conversation_chat(
         conversation.updated_at = utcnow()
 
         db.commit()
+        assistant_message_id = assistant_entry.id
+
+    # Scheduling is an independent, verified tool action. It cannot book;
+    # it only proposes a live-available slot. Persist the *actual* result
+    # instead of an LLM guess about calendar availability.
+    scheduling = None
+    if stage == "check":
+        if has_saved_booking(conversation_id):
+            reply = (
+                "This lead already has a saved consultation. "
+                "Please review it under Appointments before arranging another."
+            )
+        else:
+            try:
+                from uuid import UUID
+                from .natural_language_scheduling import (
+                    ScheduleRequest, schedule_request
+                )
+                result = await schedule_request(
+                    UUID(conversation_id), ScheduleRequest(message=request.message)
+                )
+                scheduling = result
+                if result.get("proposal"):
+                    reply = (
+                        "Google Calendar shows your requested 30-minute slot "
+                        "as available. Please review the appointment card in "
+                        "this chat and click CONFIRM BOOKING to create the event."
+                    )
+                else:
+                    reply = result.get("reply", "Please choose another time.")
+            except HTTPException as error:
+                logger.warning("Scheduling check unavailable (%s)", error.status_code)
+                reply = (
+                    "I couldn't verify Google Calendar availability right now. "
+                    "Please retry or check the Appointments page; "
+                    "no booking was created."
+                )
+            except Exception as error:
+                logger.warning("Scheduling error: %s", type(error).__name__)
+                reply = (
+                    "I couldn't verify that time right now. "
+                    "Please try again using Appointments. No booking was created."
+                )
+        with SessionLocal() as db:
+            saved = db.get(ChatMessage, assistant_message_id)
+            if saved is not None and saved.conversation_id == conversation_id:
+                saved.content = reply
+                db.commit()
 
     return {
         "success": True,
         "conversation_id": conversation_id,
         "reply": reply,
-        "lead": qualification
+        "lead": qualification,
+        "scheduling": scheduling
     }
 
 

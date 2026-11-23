@@ -1,0 +1,24 @@
+/* One account control in the top bar; replaces the AuthGate bottom-left floating chip. */
+.topbar { position: relative; z-index: 45; }
+.lp-account-menu { position: relative; flex: 0 0 auto; font-family: inherit; }
+.lp-account-trigger { appearance: none; display: inline-flex; align-items: center; gap: 9px; padding: 5px 7px; background: transparent; color: #29304e; border: 1px solid transparent; border-radius: 13px; text-align: left; cursor: pointer; }
+.lp-account-trigger:hover, .lp-account-trigger:focus-visible, .lp-account-trigger[aria-expanded="true"] { background: #f4f1ff; border-color: #e8e1ff; outline: none; }
+.lp-account-identity { min-width: 0; display: flex; flex-direction: column; line-height: 1.35; }
+.lp-account-identity strong { font-size: 12px; font-weight: 800; max-width: 124px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lp-account-identity small { font-size: 10px; color: #8f94ad; }
+.lp-account-arrow { color: #858ca3; flex-shrink: 0; transition: transform 150ms ease; }
+.lp-account-arrow.open { transform: rotate(180deg); }
+.lp-account-popover { position: absolute; top: calc(100% + 9px); right: 0; width: min(246px, calc(100vw - 18px)); box-sizing: border-box; padding: 9px; z-index: 150; background: #fff; border: 1px solid #e8e4f6; border-radius: 14px; box-shadow: 0 16px 50px rgba(36, 30, 82, .16); }
+.lp-account-summary { display: flex; flex-direction: column; gap: 4px; padding: 10px 11px 12px; border-bottom: 1px solid #eeecf5; min-width: 0; }
+.lp-account-summary strong { font-size: 13px; color: #333257; overflow-wrap: anywhere; }
+.lp-account-summary small { font-size: 11px; color: #888da7; }
+.lp-account-signout { display: flex; align-items: center; gap: 9px; width: 100%; text-align: left; color: #583eca; border: 0; background: transparent; border-radius: 9px; margin-top: 7px; padding: 11px; font-size: 12px; font-weight: 700; cursor: pointer; }
+.lp-account-signout:hover, .lp-account-signout:focus-visible { background: #f2efff; outline: none; }
+.lp-account-signout:disabled { opacity: .55; cursor: wait; }
+.lp-account-error { margin: 7px 6px; color: #ab1d36; background: #fff2f4; padding: 8px; border-radius: 8px; font-size: 11px; overflow-wrap: anywhere; }
+@media (max-width: 760px) {
+  .lp-account-trigger { gap: 4px; padding: 5px 4px; }
+  .lp-account-identity { display: none; }
+  .lp-account-trigger .user-avatar { display: inline-flex; }
+  .lp-account-popover { right: -4px; }
+}

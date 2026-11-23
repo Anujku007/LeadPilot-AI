@@ -1,0 +1,6 @@
+.chat-booking-card{background:#faf9ff;border:1px solid #dcd4ff;border-radius:16px;padding:15px 18px;margin:12px 18px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;flex-shrink:0;max-height:45vh;overflow-y:auto;box-shadow:0 4px 16px rgba(82,51,180,.045)}
+.chat-booking-heading{display:flex;align-items:center;gap:10px;color:#6544df;flex:1 1 230px}.chat-booking-heading strong{font-size:14px;display:block;color:#262147}.chat-booking-heading small{font-size:12px;display:block;margin-top:4px;color:#787791}
+.chat-booking-heading.confirmed{color:#12865d}.chat-booking-datetime{display:flex;align-items:center;gap:7px;font-size:13px;color:#373052;flex:1 1 280px}
+.chat-booking-consent{flex:1 1 100%;display:flex;align-items:center;gap:8px;color:#54506e;font-size:12px}.chat-booking-consent input{accent-color:#7449ef;width:17px;height:17px;flex:0 0 auto}
+.chat-booking-confirm{flex:0 0 auto}.chat-booking-safety{display:flex;align-items:center;gap:5px;flex:1 1 240px;font-size:11px;color:#77748e}.chat-booking-error{display:flex;gap:8px;align-items:center;color:#b42841;font-size:12px;flex:1 1 100%}
+@media(max-width:700px){.chat-booking-card{margin:8px 10px;padding:12px}.chat-booking-confirm{width:100%;justify-content:center}}

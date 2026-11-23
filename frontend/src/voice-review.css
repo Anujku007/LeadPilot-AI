@@ -1,0 +1,8 @@
+.voice-recording-review,.voice-review-transcript{display:flex;flex-direction:column;gap:10px;padding:12px;border:1px solid #e0dcf2;background:#faf9ff;border-radius:12px;margin:10px 0}
+.voice-recording-review>strong{display:flex;align-items:center;gap:8px;font-size:13px;color:#42325c}.voice-recording-review audio{width:100%;max-height:44px}
+.voice-review-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.voice-review-actions button{display:inline-flex;gap:7px;align-items:center;justify-content:center;padding:9px 11px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid #d5cbea}.voice-review-actions button:disabled{opacity:.5;cursor:not-allowed}
+.voice-review-primary{background:#6950d8;color:white;border-color:#6950d8!important}.voice-review-secondary{background:white;color:#6441c9}.voice-review-quiet{background:transparent;color:#766e89}
+.voice-review-transcript label{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;align-items:center;font-size:12px;color:#403457}.voice-review-transcript label span{color:#756c86;font-size:11px;font-weight:400}
+.voice-review-transcript textarea{resize:vertical;width:100%;min-height:72px;max-height:180px;padding:10px 12px;box-sizing:border-box;border:1px solid #dcd3f0;border-radius:10px;background:white;color:#2a2440;font-family:inherit;font-size:13px;line-height:1.5}
+.voice-review-transcript textarea:read-only{background:#f8f8fa}.voice-privacy{line-height:1.5}
+@media(max-width:680px){.voice-review-actions button{flex:1 1 100%}}
