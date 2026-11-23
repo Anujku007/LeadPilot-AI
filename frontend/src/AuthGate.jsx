@@ -95,6 +95,13 @@ export default function AuthGate() {
       </div>}
       {status === 'login' && <form onSubmit={login} className="lp-auth-form">
         <h2>Sign in to your workspace</h2>
+        <div className="lp-auth-alert" aria-label="Visitor login credentials">
+          <h2>Visitor access</h2>
+          <p>Use these credentials to sign in and explore LeadPilot AI.</p>
+          <p><strong>Username:</strong> Test_user_1</p>
+          <p><strong>Password:</strong> Testuser1234</p>
+          <button type="button" onClick={() => { setUsername('Test_user_1'); setPassword('Testuser1234'); setError('') }}>Fill login details</button>
+        </div>
         <label htmlFor="lp-auth-username">Username</label>
         <input id="lp-auth-username" value={username} onChange={e => setUsername(e.target.value)} autoComplete="username" minLength={3} maxLength={50} required placeholder="operator" autoFocus />
         <label htmlFor="lp-auth-password">Password</label>
